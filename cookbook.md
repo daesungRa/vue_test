@@ -50,3 +50,67 @@ Vue 의 하나의 특별한 관점에 집중할 수 있다는 의미이다.
 -- 이하생략
 
 ## Adding Instance Properties
+
+### Base Example
+
+많은 컴포넌트들에 당신이 사용하고자 하는 data/utilities 가 있을 수 있지만,
+당신은 [전역 스코프를 오염](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch3.md)시키고 싶지 않을 것이다.
+이러한 경우에 당신은 각각의 Vue 인스턴스를 특정 prototype 안에 정의함으로써 그것을 사용 가능하게 할 수 있다.
+
+```javascript
+Vue.prototype.$appName = 'My App'
+```
+
+이제 ```$appName``` 은 그것을 만들어내기 전에도 모든 인스턴스에서 사용 가능하게 되었다.
+만약 다음의 코드를 실행한다면:
+
+```javascript
+new Vue({
+    beforeCreate: function () {
+        console.log(this.$appName)
+    }
+})
+```
+
+```"My App"``` 이란 이름이 콘솔에 기록될 것이다.
+
+### The Importance of Scoping Instance Properties
+
+당신은 아마 다음의 내용이 궁금할지 모른다.
+
+> "왜 ```appName``` 은 ```$``` 로 시작할까? 중요한 것일까? 이것은 어떤 동작을 할까?"
+
+어떤 마법도 일어나지 않는다. ```$``` 는 모든 인스턴스에서 사용 가능한 속성을 지정할 때 Vue 가 사용하는 관례다.
+이것은 정의된 어떤 data, 계산된 값이나 메서드와의 충돌도 피할 수 있도록 한다.
+
+> "충돌? 무슨 의미인가?"
+
+좋은 질문이다! 다음을 세팅한다고 가정해 보자:
+
+```javascript
+Vue.prototype.appName = 'My App'
+```
+
+그럼 하단에 무엇이 기록될 것으로 기대되는가?
+
+```javascript
+new Vue({
+    data: {
+        // Uh oh - appName is *also* the name of the
+        // instance property we defined!
+        appName: 'The name of some other app'
+    },
+    beforeCreate: function () {
+        console.log(this.appName)
+    },
+    created: function () {
+        console.log(this.appName)
+    }
+})
+```
+
+```"My App"``` 에서 ```"The name of some other app"``` 으로 바뀔 것이다.
+왜냐하면 ```this.appName``` 은 인스턴스가 생성될 때 ```data``` 에 의해 덮어씌워지기 때문이다.
+우리는 이것을 피하기 위해 인스턴스 속성의 범주를 ```$``` 와 함께 지정할 수 있다.
+심지어 플러그인이나 미래의 양식과 충돌하는 것을 미연에 방지하기 위해
+당신이 원한다면 ```$_appName``` 이나 ```ΩappName``` 과 같이 당신만의 컨벤션을 사용할 수도 있다.
