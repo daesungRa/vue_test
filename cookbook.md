@@ -1,9 +1,19 @@
 
-# Introduction
+![author](https://img.shields.io/badge/author-daesungRa-lightgray.svg?style=flat-square)
+![date](https://img.shields.io/badge/date-190925-lightgray.svg?style=flat-square)
+
+# Vue 쿡북!
 
 ref: [Introduction of cookbook](https://vuejs.org/v2/cookbook/)
 
-## The Cookbook vs the Guide
+## Contents
+
+1. [Introduction](#Introduction)
+2. [Adding Instance Properties](#Adding-Instance-Properties)
+
+## Introduction
+
+### The Cookbook vs the Guide
 
 쿡북은 가이드와 어떻게 다른가? 왜 필요할까?
 
@@ -30,7 +40,7 @@ Vue 의 하나의 특별한 관점에 집중할 수 있다는 의미이다.
 *주의:* 이러한 모든 차이점에 대해서, 쿡북은 스텝 바이 스텝 매뉴얼이 아님을 명심하라.
 이것의 모든 내용에 대해서 당신은 HTML, CSS, JavaScript, npm/yarn 등의 컨셉에 대한 기본적인 이해를 가지고 있다는 것으로 전제된다.
 
-## 쿡북에 기여하기
+### 쿡북에 기여하기
 
 #### # 우리가 바라는 것
 
@@ -38,3 +48,5 @@ Vue 의 하나의 특별한 관점에 집중할 수 있다는 의미이다.
 우리의 목적은 단순하게 개괄적인 예제를 넘어서 보다 광범위하게 적용할 수 있는 개념과 목적지까지의 충분한 유의사항을 설명하는 것에 있다.
 
 -- 이하생략
+
+## Adding Instance Properties
