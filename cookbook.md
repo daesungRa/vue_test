@@ -114,3 +114,20 @@ new Vue({
 우리는 이것을 피하기 위해 인스턴스 속성의 범주를 ```$``` 와 함께 지정할 수 있다.
 심지어 플러그인이나 미래의 양식과 충돌하는 것을 미연에 방지하기 위해
 당신이 원한다면 ```$_appName``` 이나 ```ΩappName``` 과 같이 당신만의 컨벤션을 사용할 수도 있다.
+
+### Real-World Example: Replacing Vue Resource with Axios
+
+[오래된 Vue 리소스(now-retired Vue Resource)](https://medium.com/the-vue-point/retiring-vue-resource-871a82880af4)를 교체한다고 가정해 보자.
+당신은 ```this.$http``` 를 통해 request 메서드에 접근하여 Axios 라이브러리 대신 그것와 동일한 작업을 수행할 수 있다.
+
+당신이 해야 할 모든 것은 axios 를 당신의 프로젝트에 포함시키는것 뿐이다.
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.2/axios.js"></script>
+
+<div id="app">
+    <ul>
+        <li v-for="user in users">{{ user.name }}</li>
+    </ul>
+</div>
+```
