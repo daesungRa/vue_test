@@ -51,7 +51,7 @@ Vue 의 하나의 특별한 관점에 집중할 수 있다는 의미이다.
 
 ## Adding Instance Properties
 
-### Base Example
+### 기본 예제 (Base Example)
 
 많은 컴포넌트들에 당신이 사용하고자 하는 data/utilities 가 있을 수 있지만,
 당신은 [전역 스코프를 오염](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch3.md)시키고 싶지 않을 것이다.
@@ -74,7 +74,7 @@ new Vue({
 
 ```"My App"``` 이란 이름이 콘솔에 기록될 것이다.
 
-### The Importance of Scoping Instance Properties
+### 스코핑 인스턴스 속성의 중요성 (The Importance of Scoping Instance Properties)
 
 당신은 아마 다음의 내용이 궁금할지 모른다.
 
@@ -115,10 +115,10 @@ new Vue({
 심지어 플러그인이나 미래의 양식과 충돌하는 것을 미연에 방지하기 위해
 당신이 원한다면 ```$_appName``` 이나 ```ΩappName``` 과 같이 당신만의 컨벤션을 사용할 수도 있다.
 
-### Real-World Example: Replacing Vue Resource with Axios
+### 실제 사례: Axios 로 Vue 리소스 교체하기 (Real-World Example: Replacing Vue Resource with Axios)
 
 [오래된 Vue 리소스(now-retired Vue Resource)](https://medium.com/the-vue-point/retiring-vue-resource-871a82880af4)를 교체한다고 가정해 보자.
-당신은 ```this.$http``` 를 통해 request 메서드에 접근하여 Axios 라이브러리 대신 그것와 동일한 작업을 수행할 수 있다.
+당신은 ```this.$http``` 를 통해 request 메서드에 접근함으로써 Axios 라이브러리 대신 그것와 동일한 작업을 수행할 수 있다.
 
 당신이 해야 할 모든 것은 axios 를 당신의 프로젝트에 포함시키는것 뿐이다.
 
@@ -131,3 +131,97 @@ new Vue({
     </ul>
 </div>
 ```
+
+```Vue.prototype.$http``` 에 ```axios``` 라는 별명을 부여하라:
+
+```javascript
+Vue.prototype.$http = axios
+```
+
+그럼 어떠한 Vue 인스턴스에서든지 ```this.$http.get``` 과 같은 메서드를 사용할 수 있다.
+
+```javascript
+new Vue({
+    el: '#app',
+    data: {
+        users: []
+    },
+    created() {
+        var vm = this
+        this.$http
+            .get('https://jsonplaceholder.typicode.com/users')
+            .then(function(response) {
+                vm.users = response.data
+            })
+    }
+})
+```
+
+### 프로토타입 메서드의 문맥 (The Context of Prototype Methods)
+
+당신이 알아차리지 못한 경우, 메서드는 인스턴스 컨텍스트로부터 얻어진 JavaScript 프로토타입에 추가된다.
+이는 그것들이 data, 계산된 속성값, 메서드, 또는 인스턴스에 정의된 다른 무엇에라도 접근하기 위하여
+```this``` 를 사용할 수 있다는 의미이다.
+
+```$reverseText``` 메서드를 통해 이러한 이점을 활용해 보자:
+
+```javascript
+Vue.prototype.$reverseText = function(propertyName) {
+    this[propertyName] = this[propertyName]
+        .split('')
+        .reverse()
+        .join('')
+}
+
+new Vue({
+    data: {
+        message: 'Hello',
+    },
+    created: function() {
+        console.log(this.message)  // => "Hello"
+        this.$reverseText('message')
+        console.log(this.message)  // => "olleH"
+    }
+})
+```
+
+만약 당신이 ES6/2015 arrow function 을 그것의 부모 스코프에 암시적인 bind 로 사용한다면
+이 context binding 은 동작하지 않을 것이라는 사실을 명심하라.
+
+```javascript
+Vue.prototype.$reverseText = propertyName => {
+    this[propertyName] = this[propertyName]
+        .split('')
+        .reverse()
+        .join('')
+}
+```
+
+이것은 다음의 에러를 throw 할 것이다:
+
+```text
+Uncaught TypeError: Cannot read property 'split' of undefined
+```
+
+### 이 패턴을 피하고자 할 때 (When To Avoid This Pattern)
+
+프로토타입 속성의 스코핑을 경계하고 있는 한 이러한 패턴을 사용하는 것은 꽤 안전하다. 이 경우 아마 버그를 생성하지 않을 것이다.
+
+그러나 다른 개발자들과 소통할 때 이것은 때때로 혼란을 초래한다.
+예를 들어 그들은 아마도 ```this.$http``` 를 보고 "이 Vue 형태가 뭔지 알 수가 없어!" 라고 생각할 것이다.
+그리고 그들은 다른 프로젝트로 옮겨갈 것이고 ```this.$http``` 가 정의되지 않는 한 혼란스러워할 것이다.
+또는 구글로부터 어떻게 해야 할지 물을지도 모르지만,
+이것이 실제로 별칭 아래 Axios 를 사용하고 있다는 것을 깨닫지 못하기 때문에 결과물을 찾을 수는 없을 것이다.
+
+**편리함은 명시성을 희생시킨다.** 컴포넌트를 볼 때, ```$http``` 가 비롯된 부분을 말할 수 없다.
+Vue 스스로 그것이 가능할까? 아니면 플러그인? 동료?
+
+그렇다면 대체할 방안은 무엇일까?
+
+### 대체 패턴 (Alternative Patterns)
+
+#### # 모듈 시스템을 사용하지 않을 때 (When Not Using a Module System)
+
+어떠한 모듈 시스템도 없는 어플리케이션에서는 (예를 들어 Webpack 또는 Browserify)
+어떠한 JavaScript 강화 프론트엔드와도 종종 함께 사용되는 패턴이 존재한다.
+a global ```App``` 객체가 그것이다.
