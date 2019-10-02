@@ -223,5 +223,26 @@ Vue 스스로 그것이 가능할까? 아니면 플러그인? 동료?
 #### # 모듈 시스템을 사용하지 않을 때 (When Not Using a Module System)
 
 어떠한 모듈 시스템도 없는 어플리케이션에서는 (예를 들어 Webpack 또는 Browserify)
-어떠한 JavaScript 강화 프론트엔드와도 종종 함께 사용되는 패턴이 존재한다.
+어떤 JavaScript 강화 프론트엔드와도 종종 함께 사용되는 패턴이 존재한다.
 a global ```App``` 객체가 그것이다.
+
+만약 당신이 덧붙이고자 하는 것이 Vue 에는 특별히 설정할 것이 없는 것이라면,
+이것이야말로 원하는 바에 부합하는 대체재일 것이다. 다음 예제를 보자:
+
+```javascript
+var App = Object.freeze({
+    name: 'My App',
+    version: '2.1.4',
+    helpers: {
+        // This is a purely functional version of
+        // the $reverseText method we saw earlier
+        reverseText: function(text) {
+            return text.split('')
+                        .reverse()
+                        .join('')
+        }
+    }
+})
+```
+
+
